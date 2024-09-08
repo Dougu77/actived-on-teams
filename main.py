@@ -1,5 +1,3 @@
-from dotenv import load_dotenv
-import os
 import pyautogui
 from datetime import datetime
 import time
@@ -7,9 +5,6 @@ import keyboard
 import subprocess
 import threading
 import instructions
-
-# Load enviroment constant
-load_dotenv()
 
 # Define language (pt-br or eng)
 language = 'pt-br'
@@ -52,7 +47,7 @@ if __name__ == "__main__":
     positions = define_cursor_positions()
 
     # Open Teams shortcut
-    subprocess.Popen(['cmd', '/c', os.getenv('TEAMS_PATH')])
+    subprocess.Popen(['cmd', '/c', 'C:\\Users\\Douglas\\Desktop\\Teams.lnk'])
     instructions.print_open_teams(language)
 
     # Create the stop event
