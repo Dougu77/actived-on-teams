@@ -1,13 +1,18 @@
 from dotenv import load_dotenv
 import os
 import pyautogui
+from datetime import datetime
+import time
 import keyboard
 import subprocess
-import time
 import threading
+import instructions
 
 # Load enviroment constant
 load_dotenv()
+
+# Define language (pt-br or eng)
+language = 'pt-br'
 
 # Define the 4 cursor positions
 def define_cursor_positions():
@@ -26,7 +31,10 @@ def move_cursor(positions:list[tuple[int, int]]):
     while not stop_event.is_set():
         for position in positions:
             pyautogui.moveTo(position)
+            horario = str(datetime.now())[11:19]
+            print(f'{horario} - X: {position[0]} | Y: {position[1]}')
             time.sleep(1)
+        print('')
 
 # Check if the "S" key was pressed, and stop the program
 def check_stop():
@@ -36,12 +44,16 @@ def check_stop():
 
 # Main
 if __name__ == "__main__":
-   
+
+    # Start message
+    instructions.print_start(language)
+
     # Set the positions list
     positions = define_cursor_positions()
-        
+
     # Open Teams shortcut
     subprocess.Popen(['cmd', '/c', os.getenv('TEAMS_PATH')])
+    instructions.print_open_teams(language)
 
     # Create the stop event
     stop_event = threading.Event()
@@ -55,3 +67,7 @@ if __name__ == "__main__":
 
     # Wait until the cursor_thread terminates
     cursor_thread.join()
+    instructions.print_stop(language)
+    
+    # Wait for the user to press anything
+    instructions.input_end(language)
