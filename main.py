@@ -57,7 +57,7 @@ if __name__ == "__main__":
     cursor_thread = threading.Thread(target=lambda: move_cursor(positions))
     cursor_thread.start()
 
-    # Call check_stop() and wait until the usar press "S"
+    # Call check_stop() and wait until the user press "S"
     check_stop()
 
     # Wait until the cursor_thread terminates
