@@ -1,3 +1,4 @@
+# Imports
 import pyautogui
 from datetime import datetime
 import time
@@ -10,7 +11,7 @@ import instructions
 language = 'pt-br'
 
 # Define the 4 cursor positions
-def define_cursor_positions():
+def define_cursor_positions() -> list[tuple[int, int]]:
     screen_width, screen_height = pyautogui.size()
     padding = 10
     positions = [
@@ -22,17 +23,17 @@ def define_cursor_positions():
     return positions
 
 # Move cursor function
-def move_cursor(positions:list[tuple[int, int]]):
+def move_cursor(positions:list[tuple[int, int]]) -> None:
     while not stop_event.is_set():
         for position in positions:
             pyautogui.moveTo(position)
-            horario = str(datetime.now())[11:19]
-            print(f'{horario} - X: {position[0]} | Y: {position[1]}')
+            current_time = str(datetime.now())[11:19]
+            print(f'{current_time} - X: {position[0]} | Y: {position[1]}')
             time.sleep(1)
         print('')
 
 # Check if the "S" key was pressed, and stop the program
-def check_stop():
+def check_stop() -> None:
     global stop_event
     keyboard.wait('s')
     stop_event.set()
