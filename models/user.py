@@ -3,17 +3,16 @@ import pyautogui
 
 class User():
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.path = f'C:\\Users\\{os.getlogin()}\\Desktop\\Teams.lnk'
         self.positions = self.get_cursor_positions()
     
-    def get_cursor_positions() -> list[tuple[int, int]]:
-        screen_width, screen_height = pyautogui.size()
+    def get_cursor_positions(self) -> list[tuple[int, int]]:
+        width, height = pyautogui.size()
         padding = 10
-        positions = [
+        return [
             (padding, padding),
-            (screen_width - padding, padding),
-            (screen_width - padding, screen_height - padding),
-            (padding, screen_height - padding)
+            (width - padding, padding),
+            (width - padding, height - padding),
+            (padding, height - padding)
         ]
-        return positions

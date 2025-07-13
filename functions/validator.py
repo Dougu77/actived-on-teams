@@ -1,8 +1,9 @@
 from models.enums import Language
+import os
 
 class Validator():
     
-    def __init__(self, language:Language):
+    def __init__(self, language:Language) -> None:
         self.language = language
 
     def validate_string(self, question:str) -> str:
@@ -74,6 +75,7 @@ class Validator():
                         print(f'Digite uma opção entre 1 e {max_options}.')
                     case Language.ENG:
                         print(f'Choose an option between 1 and {max_options}.')
+        print()
         return answer
 
     def validate_choices(self, title:str, choices:list[str]) -> int:
@@ -91,3 +93,16 @@ class Validator():
             print(f'[ {index} ] {choice}')
         print()
         return self.validate_option(len(choices))
+
+    def validate_path(self, question:str) -> str:
+        while True:
+            answer = self.validate_string(question)
+            if os.path.exists(answer):
+                break
+            else:
+                match self.language:
+                    case Language.PT_BR:
+                        print('Digite um caminho que exista.')
+                    case Language.ENG:
+                        print('Type an path that exists.')
+        return answer

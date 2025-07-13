@@ -1,21 +1,26 @@
 # Imports
-from functions.instructions import Instructions
 from models.user import User
-import pyautogui
-from datetime import datetime
+from functions.instructions import Instructions
+
 import time
 import keyboard
-import subprocess
+import pyautogui
 import threading
+import subprocess
+from datetime import datetime
 
 # Move cursor function
-def move_cursor(positions:list[tuple[int, int]]) -> None:
+def move_cursor(positions:list[tuple[int, int]], instructions: Instructions) -> None:
     while not stop_event.is_set():
         for position in positions:
-            pyautogui.moveTo(position)
-            current_time = str(datetime.now())[11:19]
-            print(f'{current_time} - X: {position[0]} | Y: {position[1]}')
-            time.sleep(1)
+            try:
+                pyautogui.moveTo(position)
+                current_time = str(datetime.now())[11:19]
+                print(f'{current_time} - X: {str(position[0]).ljust(4)} | Y: {str(position[1]).ljust(4)}')
+            except Exception as exception:
+                instructions.print_exception(exception)
+            finally:
+                time.sleep(1)
         print('')
 
 # Check if the "S" key was pressed, and stop the program
@@ -30,43 +35,42 @@ if __name__ == '__main__':
     user = User()
     instructions = Instructions()
 
-    instructions.print_start()
+    instructions.print_start(user.path)
 
     option = 0
     while option != 4:
         option = instructions.print_main_menu()
         match option:
             case 1:
-                
-                # Open Teams
-                instructions.print_open_teams()
-                subprocess.Popen(['cmd', '/c', user.path])
+            
+                try:
+                    # Open Teams
+                    subprocess.run(['cmd', '/c', user.path], check=True)
+                    instructions.print_open_teams()
 
-                # Create the stop event
-                stop_event = threading.Event()
+                    # Create the stop event
+                    stop_event = threading.Event()
 
-                # Start the thread that moves the cursor
-                cursor_thread = threading.Thread(target=lambda: move_cursor(user.positions))
-                cursor_thread.start()
+                    # Start the thread that moves the cursor
+                    cursor_thread = threading.Thread(target=lambda: move_cursor(user.positions, instructions))
+                    cursor_thread.start()
 
-                # Call check_stop() and wait until the user press "S"
-                check_stop()
+                    # Call check_stop() and wait until the user press "S"
+                    check_stop()
 
-                # Wait until the cursor_thread terminates
-                cursor_thread.join()
-                instructions.print_stop()
-                
-                # Exit the while
-                break
+                    # Wait until the cursor_thread terminates
+                    cursor_thread.join()
+                    instructions.print_stop()
+
+                except Exception as exception:
+                    instructions.print_exception(exception)
             
             case 2:
-                print(option)
+                instructions.set_language()
+                instructions.print_start(user.path)
             
             case 3:
-                print(option)
+                user.path = instructions.set_path()
             
             case 4:
-                print(option)
-                
-    # Wait for the user to press anything
-    instructions.input_end()
+                instructions.input_end()
