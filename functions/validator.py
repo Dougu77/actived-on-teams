@@ -97,8 +97,18 @@ class Validator():
     def validate_path(self, question:str) -> str:
         while True:
             answer = self.validate_string(question)
+            if answer.startswith('"') and answer.endswith('"'):
+                answer = answer[1:-1]
             if os.path.exists(answer):
-                break
+                if answer.endswith('.exe') or answer.endswith('.lnk'):
+                    break
+                else:
+                    match self.language:
+                        case Language.PT_BR:
+                            print('Digite o caminho de um arquivo .exe ou .lnk.')
+                        case Language.ENG:
+                            print('Type an path of an .exe or .lnk file.')
+                    continue
             else:
                 match self.language:
                     case Language.PT_BR:

@@ -18,7 +18,6 @@ class Instructions():
                 self.print_line(104)
                 print('\n-> Esse programa é responsável por mover o mouse pelos cantos da tela para simular estar ativo no Teams.')
                 print('-> Pressione "S" para encerrar a movimentação automatizada do mouse.')
-                print('-> O programa abre o Teams através de um atalho na área de trabalho, se não houver um atalho, crie-o.')
                 print(f'-> Caminho para o atalho: "{path}".')
             case Language.ENG:
                 self.print_line(94)
@@ -26,7 +25,6 @@ class Instructions():
                 self.print_line(94)
                 print('\n-> This program moves the mouse cursor to the screen edges to simulate being actived on Teams.')
                 print('-> Press "S" to stop the mouse automatic moves.')
-                print('-> The program uses and Teams shortcut on the desktop, if you didn\'t set one, do it.')
                 print(f'-> Shortcut path: "{path}".')
 
     def print_main_menu(self) -> int:

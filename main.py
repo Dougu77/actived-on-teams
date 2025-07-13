@@ -45,7 +45,7 @@ if __name__ == '__main__':
             
                 try:
                     # Open Teams
-                    subprocess.run(['cmd', '/c', user.path], check=True)
+                    subprocess.Popen(['start', '', user.path], shell=True)
                     instructions.print_open_teams()
 
                     # Create the stop event
