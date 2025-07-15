@@ -1,4 +1,4 @@
-from models.enums import Language
+from models.constants import *
 from .validator import Validator
 
 class Instructions():
@@ -28,49 +28,18 @@ class Instructions():
                 print(f'-> Shortcut path: "{path}".')
 
     def print_main_menu(self) -> int:
-        match self.language:
-            case Language.PT_BR:
-                title = 'Opções'
-                choices = [
-                    'Iniciar o programa',
-                    'Mudar idioma',
-                    'Mudar caminho do atalho do Teams',
-                    'Sair'
-                ]
-            case Language.ENG:
-                title = 'Options'
-                choices = [
-                    'Start program',
-                    'Change language',
-                    'Change Teams shortcut path',
-                    'Exit'
-                ]
         print()
-        return self.validator.validate_choices(title, choices)
-        
+        return self.validator.validate_choices(
+            self.validator.get_choices(ChoiceKey.MAIN)
+        )
 
     def print_open_teams(self) -> None:
-        match self.language:
-            case Language.PT_BR:
-                print('Abrindo o Teams...\n')
-            case Language.ENG:
-                print('Opening Teams...\n')
+        print(self.validator.get_message(MessageKey.INSTRUCTIONS_OPEN_TEAMS))
 
     def set_language(self) -> None:
-        match self.language:
-            case Language.PT_BR:
-                title = 'Idioma'
-                choices = [
-                    'Português (Brasileiro)',
-                    'Inglês'
-                ]
-            case Language.ENG:
-                title = 'Language'
-                choices = [
-                    'Braziliam Portuguese',
-                    'English'
-                ]
-        option = self.validator.validate_choices(title, choices)
+        option = self.validator.validate_choices(
+            self.validator.get_choices(ChoiceKey.LANGUAGE)
+        )
         match option:
             case 1:
                 self.language = Language.PT_BR
@@ -80,31 +49,13 @@ class Instructions():
                 self.validator.language = Language.ENG
 
     def set_path(self) -> str:
-        match self.language:
-            case Language.PT_BR:
-                question = 'Digite o caminho para o atalho: '
-            case Language.ENG:
-                question = 'Type the shortcut path: '
-        return self.validator.validate_path(question)
+        return self.validator.validate_path()
 
     def print_stop(self) -> None:
-        match self.language:
-            case Language.PT_BR:
-                print('Parando o programa...')
-            case Language.ENG:
-                print('Stopping the program...')
+        print(self.validator.get_message(MessageKey.INSTRUCTIONS_STOP_TEAMS))
 
     def input_end(self) -> None:
-        match self.language:
-            case Language.PT_BR:
-                input('Pressione ENTER para finalizar o programa...')
-            case Language.ENG:
-                input('Type ENTER to close the program...')
+        input(self.validator.get_message(MessageKey.INSTRUCTIONS_EXIT_PROGRAM))
 
     def print_exception(self, exception:str) -> None:
-        match self.language:
-            case Language.PT_BR:
-                print(f'Algo deu errado: "{exception}".')
-            case Language.ENG:
-                print(f'Something went wrong: "{exception}".')
-        print()
+        print(f'{self.validator.get_message(MessageKey.INSTRUCTIONS_EXCEPTION)}{exception}".\n')

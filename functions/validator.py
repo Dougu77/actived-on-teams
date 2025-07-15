@@ -1,4 +1,5 @@
-from models.enums import Language
+from simpleValidatorForConsoleApp import validator as validatorPackage
+from models.constants import *
 import os
 
 class Validator():
@@ -16,17 +17,10 @@ class Validator():
             str: Resposta
         '''
 
-        while True:
-            answer = input(question).strip()
-            if len(answer) > 0:
-                break
-            else:
-                match self.language:
-                    case Language.PT_BR:
-                        print('Digite algo.')
-                    case Language.ENG:
-                        print('Type something.')
-        return answer
+        return validatorPackage.validate_string(
+            question,
+            self.get_message(MessageKey.VALIDATE_STRING)
+        )
 
     def validate_int(self, question:str) -> int:
         '''summary_ Valida uma resposta para que seja um inteiro.
@@ -38,47 +32,12 @@ class Validator():
             int: Resposta
         '''
 
-        while True:
-            answer = self.validate_string(question)
-            if answer.isnumeric():
-                break
-            else:
-                match self.language:
-                    case Language.PT_BR:
-                        print('Digite um valor.')
-                    case Language.ENG:
-                        print('Type a number.')
-        return int(answer)
+        return validatorPackage.validate_int(
+            question,
+            self.get_message(MessageKey.VALIDATE_INT)
+        )
 
-    def validate_option(self, max_options:int) -> int:
-        '''summary_ Valida uma resposta para que seja um inteiro que esteja entre 1 e *max_options*.
-
-        Args:
-            max_options (int): Quantidade de opções
-
-        Returns:
-            int: Resposta
-        '''
-
-        match self.language:
-            case Language.PT_BR:
-                question = 'Digite uma opção: '
-            case Language.ENG:
-                question = 'Choose an option: '
-        while True:
-            answer = self.validate_int(question)
-            if 0 < answer <= max_options:
-                break
-            else:
-                match self.language:
-                    case Language.PT_BR:
-                        print(f'Digite uma opção entre 1 e {max_options}.')
-                    case Language.ENG:
-                        print(f'Choose an option between 1 and {max_options}.')
-        print()
-        return answer
-
-    def validate_choices(self, title:str, choices:list[str]) -> int:
+    def validate_choices(self, data:tuple[str, list[str]]) -> int:
         '''summary_ Valida uma resposta para que seja um inteiro dentro das opções
 
         Args:
@@ -88,31 +47,63 @@ class Validator():
         Returns:
             int: Opção escolhida
         '''
-        print(f'---> {title}\n')
-        for index, choice in enumerate(choices, start=1):
-            print(f'[ {index} ] {choice}')
-        print()
-        return self.validate_option(len(choices))
 
-    def validate_path(self, question:str) -> str:
+        choice = validatorPackage.validate_option(
+            data[0],
+            data[1],
+            self.get_message(MessageKey.VALIDATE_OPTION_QUESTION),
+            f'{self.get_message(MessageKey.VALIDATE_OPTION_ERROR)}{len(data[1])}.'
+        )
+        print()
+        return choice
+
+    def validate_path(self) -> str:
+        '''summary_ Valida uma resposta para que seja um caminho de um arquivo que exista e seja um executável ou um atalho
+
+        Returns:
+            str: Caminho válido
+        '''
+
         while True:
-            answer = self.validate_string(question)
+            answer = validatorPackage.validate_string(
+                self.get_message(MessageKey.VALIDATE_PATH_QUESTION),
+                self.get_message(MessageKey.VALIDATE_STRING)
+            )
             if answer.startswith('"') and answer.endswith('"'):
                 answer = answer[1:-1]
             if os.path.exists(answer):
                 if answer.endswith('.exe') or answer.endswith('.lnk'):
                     break
                 else:
-                    match self.language:
-                        case Language.PT_BR:
-                            print('Digite o caminho de um arquivo .exe ou .lnk.')
-                        case Language.ENG:
-                            print('Type an path of an .exe or .lnk file.')
+                    print(self.get_message(MessageKey.VALIDATE_PATH_FORMAT))
                     continue
             else:
-                match self.language:
-                    case Language.PT_BR:
-                        print('Digite um caminho que exista.')
-                    case Language.ENG:
-                        print('Type an path that exists.')
+                print(self.get_message(MessageKey.VALIDATE_PATH_EXISTS))
         return answer
+
+    def get_message(self, message:MessageKey) -> str:
+        '''summary_ Consegue uma mensagem na constante dedicada
+
+        Args:
+            message (MessageKey): Chave no dicionário das mensagens
+
+        Returns:
+            str: Mensagem
+        '''
+
+        return MESSAGES[message][self.language.value]
+
+    def get_choices(self, choice:ChoiceKey) -> tuple[str, list[str]]:
+        '''summary_ Consegue uma lista de opções na constante dedicada
+
+        Args:
+            message (ChoiceKey): Chave no dicionário das opções
+
+        Returns:
+            tuple[str, list[str]]: Título do menu e lista de opções
+        '''
+        
+        return (
+            CHOICES[choice][self.language.value][0],
+            CHOICES[choice][self.language.value][1]
+        )
