@@ -1,18 +1,19 @@
 # Imports
-from models.user import User
+from src.models.user import User
 from functions.instructions import Instructions
 
-import time
-import keyboard
+from datetime import datetime
+from pynput import keyboard
 import pyautogui
 import threading
 import subprocess
-from datetime import datetime
 
 # Move cursor function
 def move_cursor(positions:list[tuple[int, int]], instructions: Instructions) -> None:
     while not stop_event.is_set():
         for position in positions:
+            if stop_event.is_set():
+                break
             try:
                 pyautogui.moveTo(position)
                 current_time = str(datetime.now())[11:19]
@@ -20,14 +21,24 @@ def move_cursor(positions:list[tuple[int, int]], instructions: Instructions) -> 
             except Exception as exception:
                 instructions.print_exception(exception)
             finally:
-                time.sleep(1)
-        print('')
+                if stop_event.wait(10):
+                    break
+        if not stop_event.is_set():
+            print('')
 
 # Check if the "S" key was pressed, and stop the program
 def check_stop() -> None:
     global stop_event
-    keyboard.wait('s')
-    stop_event.set()
+    def on_press(key: keyboard.Key | keyboard.KeyCode) -> bool | None:
+        try:
+            if key.char.lower() == 's':
+                stop_event.set()
+                return False
+        except AttributeError:
+            pass
+
+    with keyboard.Listener(on_press=on_press) as listener:
+        listener.join()
 
 # Main
 if __name__ == '__main__':

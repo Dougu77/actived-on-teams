@@ -1,6 +1,8 @@
+# Imports
 import os
 import pyautogui
 
+# Class
 class User():
     
     def __init__(self) -> None:

@@ -1,6 +1,8 @@
+# imports
 from models.constants import *
 from .validator import Validator
 
+# Class
 class Instructions():
     
     def __init__(self) -> None:
