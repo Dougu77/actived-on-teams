@@ -1,5 +1,5 @@
 # Imports
-from src.models.user import User
+from models.user import User
 from functions.instructions import Instructions
 
 from datetime import datetime
